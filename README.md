@@ -1,5 +1,5 @@
 
-This is the code associated with the paper titled:
+This is the code and data associated with the paper titled:
 
 ## "Enhancing PM2.5 Prediction Using NARX-Based Combined CNN and LSTM Hybrid Model"
 
@@ -7,6 +7,6 @@ The paper is published in [Sensors Journal](https://www.mdpi.com/journal/sensors
 
 [DOI: 10.3390/s22124418](https://doi.org/10.3390/s22124418)
 
-### Please refernce the paper if you use the code.
+### Please cite the paper if you use the code.
 
 If you have any questions, please post it in the [Discussions Section](https://github.com/ahmedHashwa/AirQuality-NARX-CNN-LSTM/discussions).
