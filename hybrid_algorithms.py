@@ -1,7 +1,8 @@
-from keras.layers import LSTM, Dense, Dropout, TimeDistributed, Flatten, BatchNormalization
-from keras.layers.convolutional import Conv1D, MaxPooling1D
-from keras.models import Sequential
-
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import (
+    LSTM, Dense, Dropout, TimeDistributed, Flatten, BatchNormalization,
+    Conv1D, MaxPooling1D
+)
 
 class CNNLSTMModel:
     def __init__(self, n_lstm_nodes, n_dense_nodes, dropout_rate, activation='tanh', look_back=None,

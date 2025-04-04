@@ -1,0 +1,10 @@
+tensorflow==2.13.0
+keras==2.13.1
+pandas==2.0.3
+fireTS==0.0.9
+xgboost==2.1.4
+python-box==7.2.0
+python-aqi
+pydot
+graphviz
+matplotlib==3.7.5
