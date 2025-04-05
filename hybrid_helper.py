@@ -76,7 +76,9 @@ def evaluate_results(real, prediction, method_key, regressor_name, print_results
     results['Auto Order'] = predicted_result.auto_order
     results['Exog Order'] = predicted_result.exog_order
     results['Exog Delay'] = predicted_result.exog_delay
-    results['Step'] = predicted_result.step
+
+    results['Step'] = predicted_result.step if  hasattr(predicted_result,
+                                                                       'step') else None
 
     for m in method_key.evaluation_methods:
         results[m] = method_key.evaluation_methods[m](real, prediction)

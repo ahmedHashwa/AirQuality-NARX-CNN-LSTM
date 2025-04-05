@@ -350,7 +350,7 @@ def fit_process(m, x, y):
     return res
 
 
-def predict_process(m, x, _, __):
+def predict_process(m, x, _=None, __=None):
     if m is (hybrid_algorithms.CNNLSTMModel or hybrid_algorithms.LSTMModel):
         predicted = m.predict(x, batch_size=batch_size)
     else:
