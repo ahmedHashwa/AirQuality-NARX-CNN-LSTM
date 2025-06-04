@@ -9,7 +9,7 @@ The paper is published in [Sensors Journal](https://www.mdpi.com/journal/sensors
 
 ### Please cite the paper if you use the code.
 
-If you have any questions, please post it in the [Discussions Section](https://github.com/ahmedHashwa/AirQuality-NARX-CNN-LSTM/discussions).
+If you have any questions, please post them in the [Discussions Section](https://github.com/ahmedHashwa/AirQuality-NARX-CNN-LSTM/discussions).
 
 To use the code you must use Python 3.8. 
 Download and install Graphviz from:  
