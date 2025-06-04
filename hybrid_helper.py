@@ -138,8 +138,10 @@ def get_aqi_level(aqi_values):
             res.append("Moderate")
         elif 101 <= aqi_value <= 150:
             res.append("Unhealthy for Sensitive Groups")
-        elif 201 <= aqi_value <= 300:
+        elif 151 <= aqi_value <= 200:
             res.append("Unhealthy")
+        elif 201 <= aqi_value <= 300:
+            res.append("Very Unhealthy")
         else:
             res.append("Hazardous")
     return res

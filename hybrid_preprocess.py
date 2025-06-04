@@ -33,7 +33,7 @@ def process_dir(data_dir, t_tuple=None, skip_existing=True, save_statistics=Fals
             data.describe().to_csv(join(data_result_dir, f'../statistics_{f}'))
         if save_year:
             data.to_csv(join(data_result_dir, '../processed_data_' + f))
-        all_data = all_data.append(data, ignore_index=False)
+        all_data = pd.concat([all_data, data], ignore_index=False)
 
     if save_statistics:
         all_data.describe().to_csv(join(data_result_dir, 'all_data_statistics.csv'))
