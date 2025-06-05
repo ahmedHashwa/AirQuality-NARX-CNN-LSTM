@@ -15,7 +15,13 @@ To use the code you must use Python 3.8.
 Download and install Graphviz from:  
 👉 https://graphviz.org/download/  
 Make sure to add the Graphviz bin directory to your PATH environment variable.  
-Install it before running the code.  
+Install it before running the code.
+If you are using GitHub Codespaces or a Debian-based Linux environment, you can
+install Graphviz with apt:
+
+```bash
+sudo apt-get update && sudo apt-get install -y graphviz
+```
 ### Requirements
 The libraries used in the code are:  
 tensorflow==2.13.0  
