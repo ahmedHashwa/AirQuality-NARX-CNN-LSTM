@@ -43,8 +43,13 @@ class CNNLSTMModel:
                                                    n_subsequences=self.n_subsequences,
                                                    look_back=self.look_back)
 
-        res = self.base_model.fit(x=x_train, y=y_train, epochs=epochs, batch_size=batch_size, verbose=verbose,
-                                  use_multiprocessing=True)
+        res = self.base_model.fit(
+            x=x_train,
+            y=y_train,
+            epochs=epochs,
+            batch_size=batch_size,
+            verbose=verbose,
+        )
         return res
 
     def predict(self, x_test, batch_size=24):
@@ -106,9 +111,13 @@ class LSTMModel:
             x_train = \
                 hybrid_preprocess.reshape_features(x_train,
                                                    reshape_features_method=hybrid_preprocess.ReshapeMethod.ThreeDShape)
-        res = self.base_model.fit(x=x_train, y=y_train, epochs=epochs, batch_size=batch_size,
-                                  verbose=verbose,
-                                  use_multiprocessing=True)
+        res = self.base_model.fit(
+            x=x_train,
+            y=y_train,
+            epochs=epochs,
+            batch_size=batch_size,
+            verbose=verbose,
+        )
         return res
 
     def predict(self, x_test, batch_size=24):

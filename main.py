@@ -1,3 +1,7 @@
+import sys
+if sys.version_info < (3, 11) or sys.version_info >= (3, 12):
+    raise RuntimeError("This project requires Python 3.11")
+
 import os
 from collections import namedtuple
 
