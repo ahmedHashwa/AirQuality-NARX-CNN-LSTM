@@ -15,11 +15,14 @@ The code requires **Python 3.11**.
 TensorFlow currently does not provide wheels for Python 3.12, so please use
 Python 3.11 when installing the dependencies.
 
+
 Download and install Graphviz from:  
 👉 https://graphviz.org/download/  
 Make sure to add the Graphviz bin directory to your PATH environment variable.  
 Install it before running the code.
+
 If you are using a Debian-based Linux environment, you can
+
 install Graphviz with apt:
 
 ```bash

@@ -26,7 +26,8 @@ class CNNLSTMModel:
         # Add LSTM Model
         self.base_model.add(LSTM(n_lstm_nodes, activation=activation))
 
-        # Add one hidden layer with 100 default nodes with relu activation function
+        # Add one hidden layer with ``n_dense_nodes`` using the supplied
+        # ``activation`` function
         self.base_model.add(Dense(n_dense_nodes, activation=activation))
         self.base_model.add(Dense(1))
         # Compile model
