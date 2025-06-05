@@ -9,36 +9,30 @@ The paper is published in [Sensors Journal](https://www.mdpi.com/journal/sensors
 
 ### Please cite the paper if you use the code.
 
-If you have any questions, please post it in the [Discussions Section](https://github.com/ahmedHashwa/AirQuality-NARX-CNN-LSTM/discussions).
+If you have any questions, please post them in the [Discussions Section](https://github.com/ahmedHashwa/AirQuality-NARX-CNN-LSTM/discussions).
 
-The code requires **Python 3.11**.
-TensorFlow currently does not provide wheels for Python 3.12, so please use
-Python 3.11 when installing the dependencies.
+To use the code you must use Python 3.8. 
 Download and install Graphviz from:  
 👉 https://graphviz.org/download/  
 Make sure to add the Graphviz bin directory to your PATH environment variable.  
-Install it before running the code.  
+Install it before running the code.
+If you are using GitHub Codespaces or a Debian-based Linux environment, you can
+install Graphviz with apt:
+
+```bash
+sudo apt-get update && sudo apt-get install -y graphviz
+```
 ### Requirements
 The libraries used in the code are:  
-tensorflow==2.18.1
-keras==3.10.0
-pandas==2.2.3
-fireTS==0.0.9
-xgboost==3.0.2
-python-box==7.3.2
-python-aqi
-pydot
-graphviz
-matplotlib==3.10.3
-numpy==1.26.4
-scikit-learn==1.2.1
-setuptools>=80
-wheel
-
-Install the dependencies with:
-```
-pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
-```
+tensorflow==2.13.0  
+keras==2.13.1  
+pandas==2.0.3  
+fireTS==0.0.9  
+xgboost==2.1.4  
+python-box==7.2.0  
+python-aqi  
+pydot  
+graphviz  
+matplotlib==3.7.5  
 
 You can start the code by running main.py file.
