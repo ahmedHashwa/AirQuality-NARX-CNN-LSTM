@@ -19,7 +19,7 @@ Download and install Graphviz from:
 👉 https://graphviz.org/download/  
 Make sure to add the Graphviz bin directory to your PATH environment variable.  
 Install it before running the code.
-If you are using GitHub Codespaces or a Debian-based Linux environment, you can
+If you are using a Debian-based Linux environment, you can
 install Graphviz with apt:
 
 ```bash
@@ -44,9 +44,9 @@ wheel
 
 Install the dependencies with:
 ```
-pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 ```
 
+If you are using CodeSpaces, the devcontainer will automatically install the dependencies for you.
 
 You can start the code by running main.py file.
