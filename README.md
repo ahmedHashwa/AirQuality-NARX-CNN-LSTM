@@ -11,7 +11,9 @@ The paper is published in [Sensors Journal](https://www.mdpi.com/journal/sensors
 
 If you have any questions, please post it in the [Discussions Section](https://github.com/ahmedHashwa/AirQuality-NARX-CNN-LSTM/discussions).
 
-The code now requires Python 3.11 or newer.
+The code requires **Python 3.11**.
+TensorFlow currently does not provide wheels for Python 3.12, so please use
+Python 3.11 when installing the dependencies.
 Download and install Graphviz from:  
 👉 https://graphviz.org/download/  
 Make sure to add the Graphviz bin directory to your PATH environment variable.  
