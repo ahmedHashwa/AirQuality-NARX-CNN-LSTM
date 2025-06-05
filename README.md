@@ -30,5 +30,12 @@ graphviz
 matplotlib==3.10.3
 numpy==1.26.4
 scikit-learn==1.2.1
+setuptools>=80
+wheel
+
+Install the dependencies with:
+```
+pip install -r requirements.txt
+```
 
 You can start the code by running main.py file.
