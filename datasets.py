@@ -126,14 +126,23 @@ impute_methods = {
 
 skipped_column_names = ['Status/units', 'Unnamed', 'PM10', 'NOXasNO2', 'NV25', 'V25', 'Status']
 
-def set_datetime_index(df: DataFrame):
+def set_datetime_index(df: DataFrame) -> DataFrame:
+    """Ensure the dataframe uses a datetime index.
+
+    A copy of ``df`` is returned to avoid ``SettingWithCopyWarning`` when ``df``
+    originates from slicing operations.
+    """
+
+    df = df.copy()
     dropped_column = 'Unnamed: 0'
     if dropped_column in df.columns:
         df.drop(columns=[dropped_column], inplace=True)
     if 'Datetime' in df.columns:
-        df['Index'] = pd.to_datetime(df['Datetime'], format='%d/%m/%Y %H:%M:%S')
+        df.loc[:, 'Index'] = pd.to_datetime(
+            df['Datetime'], format='%d/%m/%Y %H:%M:%S')
         df.drop('Datetime', axis=1, inplace=True)
         df.set_index('Index', inplace=True)
+    return df
 
 
 def pre_process_data(df: DataFrame, ds_name):
@@ -182,7 +191,7 @@ def load_datasets(data_dir):
 
     for ds in datasets:
         if ds.include:
-            set_datetime_index(ds.data)
+            ds.data = set_datetime_index(ds.data)
         else:
             del ds.data
     return datasets
