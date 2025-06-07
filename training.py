@@ -3,6 +3,7 @@ import datasets
 from datetime import datetime
 from box import Box
 
+import fireTS.models  # noqa: F401
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, ExtraTreesRegressor
 from sklearn.svm import SVR
