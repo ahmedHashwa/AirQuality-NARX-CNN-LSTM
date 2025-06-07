@@ -1,8 +1,7 @@
 import os.path
 import aqi
 from fireTS.models import NARX, DirectAutoRegressor
-
-import hybrid_preprocess
+from enums import  ScaleMethod, ReshapeMethod, SplitMode
 
 
 
@@ -230,13 +229,13 @@ def benchmark_algorithm(X_train, y_train, X_test, y_test, predictor_object,
                         scale_target=False,
                         fit_process=None,
                         predict_process=None,
-                        scale_features_method: hybrid_preprocess.ScaleMethod =
-                        hybrid_preprocess.ScaleMethod.NoScaler,
-                        reshape_features_method: hybrid_preprocess.ReshapeMethod =
-                        hybrid_preprocess.ReshapeMethod.NoReshape,
+                        scale_features_method: ScaleMethod =
+                        ScaleMethod.NoScaler,
+                        reshape_features_method: ReshapeMethod =
+                        ReshapeMethod.NoReshape,
                         method_key=None, last_folder_name=''):
     import numpy as np
-
+    import hybrid_preprocess
     index = f'i_{method_key.index:02d}'
 
     out_dir = f'{method_key.results_dir}/{last_folder_name}'
@@ -280,7 +279,7 @@ def benchmark_algorithm(X_train, y_train, X_test, y_test, predictor_object,
     mask = np.isnan(y_test_out) | np.isnan(predicted)
     predicted_masked, y_test_out_masked = predicted[~mask], y_test_out[~mask]
 
-    if scale_features_method != hybrid_preprocess.ScaleMethod.NoScaler and scalers[3] is not None:
+    if scale_features_method != ScaleMethod.NoScaler and scalers[3] is not None:
         y_test_out_final = scalers[3].inverse_transform(y_test_out_masked.reshape(-1, 1))
         predicted_out = scalers[3].inverse_transform(predicted_masked.reshape(-1, 1))
     else:

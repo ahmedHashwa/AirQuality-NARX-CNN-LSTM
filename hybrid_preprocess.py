@@ -1,5 +1,4 @@
 from abc import ABC
-from enum import Enum, auto
 import itertools as it
 from os import listdir, mkdir
 from os.path import isfile, join, exists
@@ -8,6 +7,7 @@ import numpy as np
 import datetime
 import hybrid_helper
 import math
+from enums import  ScaleMethod, ReshapeMethod, SplitMode
 from sklearn.model_selection._split import _BaseKFold
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
@@ -79,28 +79,6 @@ def extract_data(path: str, file_data_transformer=None, chunk_filter=None, chunk
     if file_data_transformer is not None and file_data_transformer.func:
         data = file_data_transformer.func(data, path, file_data_transformer.name)
     return data
-
-
-class ScaleMethod(Enum):
-    NoScaler = auto()
-    MinMaxScaler = auto()
-    StandardScaler = auto()
-
-
-class ReshapeMethod(Enum):
-    NoReshape = auto()
-    TwoDShape = auto()
-    ThreeDShape = auto()
-    FourDShape = auto()
-
-
-class SplitMode(Enum):
-    KFold = auto()
-    KFoldTimeSeries = auto()
-    BlockingTimeSeriesSplit = auto()
-    MonthsIntervals = auto()
-
-
 def encode_non_numeric_columns(df):
     for column in df.columns:
         if df[column].dtype.name == object.__name__:
