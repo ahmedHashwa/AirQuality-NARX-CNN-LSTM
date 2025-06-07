@@ -3,12 +3,14 @@ import datasets
 from datetime import datetime
 from box import Box
 
-import fireTS.models
+import fireTS.models  # noqa: F401
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, ExtraTreesRegressor
 from sklearn.svm import SVR
 from xgboost import XGBRFRegressor, XGBRegressor
 from scipy.stats import pearsonr
+import pandas as pd
+import math
 
 import hybrid_algorithms
 import hybrid_helper
@@ -50,15 +52,17 @@ def train(datasets_list, cfg):
 
     def key(run_index, **kwargs):
         nonlocal algorithm_index
+        e_delay = kwargs.get("e_delay", [])
+        e_order = kwargs.get("e_order", [])
         regressor_name = kwargs["regressor_name"]
         if regressor_name not in regressors.keys():
             regressors[regressor_name] = algorithm_index
             algorithm_index += 1
         regressor_name = f'{regressors[regressor_name]:02d}_{regressor_name}'
         if any(n in regressor_name for n in ["NARX", "DAR"]):
-            kwargs["regressor_name"] = f'{regressor_name}_ao_{cfg.look_back:02d}_ed_{f_list(e_delay)}_eo_{f_list(e_order)}'
+            kwargs["regressor_name"] = f"{regressor_name}_ao_{cfg.look_back:02d}_ed_{f_list(e_delay)}_eo_{f_list(e_order)}"
         else:
-            kwargs['regressor_name'] = regressor_name
+            kwargs["regressor_name"] = regressor_name
         kwargs['overwrite_folder'] = overwrite_folder
         kwargs['max_limit'] = cfg.max_limit
         kwargs['look_back'] = cfg.look_back if not any(n in regressor_name for n in ["NARX", "DAR"]) else 0
@@ -98,7 +102,6 @@ def train(datasets_list, cfg):
                             n_dense_nodes=cfg.n_dense_nodes,
                             dropout_rate=0,
                             activation=cfg.activation),
-                        num_features=num_features,
                         n_subsequences=cfg.n_subsequences,
                         scale_target=cfg.lstm_scale_target,
                         fit_process=lambda m, x, y: fit_process(m, x, y, cfg.epochs, cfg.batch_size),
@@ -116,7 +119,6 @@ def train(datasets_list, cfg):
                             n_dense_nodes=cfg.n_dense_nodes,
                             dropout_rate=0,
                             activation=cfg.activation),
-                        num_features=num_features,
                         n_subsequences=cfg.n_subsequences,
                         scale_target=cfg.lstm_scale_target,
                         fit_process=lambda m, x, y: fit_process(m, x, y, cfg.epochs, cfg.batch_size),
@@ -166,7 +168,6 @@ def train(datasets_list, cfg):
                             n_dense_nodes=cfg.n_dense_nodes,
                             dropout_rate=cfg.dropout_rate,
                             activation=cfg.activation),
-                        num_features=num_features,
                         n_subsequences=cfg.n_subsequences,
                         scale_target=cfg.lstm_scale_target,
                         fit_process=lambda m, x, y: fit_process(m, x, y, cfg.epochs, cfg.batch_size),
@@ -257,7 +258,7 @@ def train(datasets_list, cfg):
             for i in range(1, cfg.iterations_count + 1):
                 for file in os.listdir(results_dir):
                     file = os.path.join(results_dir, file)
-                    if f'all_metrics_mean_' in file and f'{ds.name}' in file and f'_{target}_' in file:
+                    if 'all_metrics_mean_' in file and f'{ds.name}' in file and f'_{target}_' in file:
                         if all_mean_metrics_results is None:
                             all_mean_metrics_results = pd.read_csv(file, index_col=0)
                         else:

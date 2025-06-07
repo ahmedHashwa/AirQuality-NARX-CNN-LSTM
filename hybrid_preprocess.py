@@ -1,14 +1,21 @@
 from abc import ABC
-
+import itertools as it
+from os import listdir, mkdir
+from os.path import isfile, join, exists
+import pandas as pd
+import numpy as np
+import datetime
+import hybrid_helper
+import math
+from enums import  ScaleMethod, ReshapeMethod, SplitMode
 from sklearn.model_selection._split import _BaseKFold
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 
 def process_dir(data_dir, t_tuple=None, skip_existing=True, save_statistics=False,
                 save_year=False, save_data=True, save_data_corr=True, chunk_filter=None, chunk_size=24, skip_rows=5,
                 skipped_column_names=None):
-    from os import listdir, mkdir
-    from os.path import isfile, join, exists
-    import pandas as pd
+
     print(f'Starting {t_tuple.name} ...')
     if t_tuple is None:
         data_result_dir = join(data_dir, '../')
@@ -56,15 +63,14 @@ def extract_data(path: str, file_data_transformer=None, chunk_filter=None, chunk
 
 
     """
-    import itertools as it
-    import pandas as pd
+
     # Skip introductory lines in datafile
 
     chunks = pd.read_csv(path, engine='python', chunksize=chunk_size, skiprows=skip_rows)
     chunks = it.takewhile(chunk_filter if chunk_filter is not None else lambda chunk: True, chunks)
     data = pd.concat(chunks)
 
-    # Remove units columns and other non required columns
+    # Remove unit columns and other non required columns
 
     columns = data.columns if skipped_column_names is None else \
         [c for c in data.columns if all(
@@ -73,31 +79,6 @@ def extract_data(path: str, file_data_transformer=None, chunk_filter=None, chunk
     if file_data_transformer is not None and file_data_transformer.func:
         data = file_data_transformer.func(data, path, file_data_transformer.name)
     return data
-
-
-from enum import Enum, auto
-
-
-class ScaleMethod(Enum):
-    NoScaler = auto()
-    MinMaxScaler = auto()
-    StandardScaler = auto()
-
-
-class ReshapeMethod(Enum):
-    NoReshape = auto()
-    TwoDShape = auto()
-    ThreeDShape = auto()
-    FourDShape = auto()
-
-
-class SplitMode(Enum):
-    KFold = auto()
-    KFoldTimeSeries = auto()
-    BlockingTimeSeriesSplit = auto()
-    MonthsIntervals = auto()
-
-
 def encode_non_numeric_columns(df):
     for column in df.columns:
         if df[column].dtype.name == object.__name__:
@@ -114,7 +95,6 @@ def relocate_target(df, target_column):
 
 
 def shift_dataset(data, look_back, remove_original_data=True):
-    import pandas as pd
     ds = pd.DataFrame(data)
     if remove_original_data:
         del data
@@ -140,9 +120,7 @@ def shift_dataset(data, look_back, remove_original_data=True):
 # noinspection PyPep8Naming
 def scale_data(X_train, y_train, X_test, y_test, scale_target=False,
                scale_features_method: ScaleMethod = ScaleMethod.NoScaler, dropna=True):
-    import pandas as pd
-    import numpy as np
-    from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
     train_feature_scaler = None
     train_target_scaler = None
     test_feature_scaler = None
@@ -180,20 +158,18 @@ def scale_data(X_train, y_train, X_test, y_test, scale_target=False,
 
 
 # noinspection PyPep8Naming
-def reshape_data(X_train, X_test, num_features, reshape_features_method: ReshapeMethod = ReshapeMethod.NoReshape,
-                 n_subsequences=4, look_back=5):
-    X_train = reshape_features(features=X_train, num_features=num_features,
-                               reshape_features_method=reshape_features_method,
-                               n_subsequences=n_subsequences, look_back=look_back)
-    X_test = reshape_features(features=X_test, num_features=num_features,
-                              reshape_features_method=reshape_features_method,
-                              n_subsequences=n_subsequences, look_back=look_back)
+def reshape_data(X_train, X_test, reshape_features_method: ReshapeMethod = ReshapeMethod.NoReshape,
+                 n_subsequences=4):
+    X_train = reshape_features(features=X_train, reshape_features_method=reshape_features_method,
+                               n_subsequences=n_subsequences)
+    X_test = reshape_features(features=X_test, reshape_features_method=reshape_features_method,
+                              n_subsequences=n_subsequences)
     return X_train, X_test
 
 
 # noinspection PyPep8Naming
-def reshape_features(features, num_features=None, reshape_features_method: ReshapeMethod = ReshapeMethod.NoReshape,
-                     n_subsequences=None, look_back=None, reshape_tuple_func=None):
+def reshape_features(features, reshape_features_method: ReshapeMethod = ReshapeMethod.NoReshape,
+                     n_subsequences=None, reshape_tuple_func=None):
     train_samples_count = features.shape[0]
     if reshape_features_method is ReshapeMethod.ThreeDShape:
         features = features.reshape((train_samples_count, 1, features.shape[1]))
@@ -202,13 +178,8 @@ def reshape_features(features, num_features=None, reshape_features_method: Resha
         features = features.reshape(reshape_tuple_func(train_samples_count))
 
     if reshape_features_method is ReshapeMethod.FourDShape and n_subsequences is not None:
-        # n_steps = int(look_back / n_subsequences)
-        # features = features.reshape((train_samples_count, n_subsequences, n_steps, num_features))
         train_columns_count = features.shape[1]
-        # Best
-        # features = features.reshape((train_samples_count, 1, train_columns_count, 1))
         features = features.reshape((train_samples_count, 1, train_columns_count//2, 2))
-        # features = features.reshape((1, 1, train_samples_count, train_columns_count))
 
     return features
 
@@ -236,7 +207,7 @@ def split_data(target_column, look_back, pre_process_data, ds, iterations_count,
             yield X_train, X_test, y_train, y_test, num_features, i
 
     else:
-        import math
+
         min_date = ds.data.index.min()
         max_date = ds.data.index.max()
         num_months = (max_date.year - min_date.year) * 12 + (max_date.month - min_date.month)
@@ -258,7 +229,7 @@ def split_data(target_column, look_back, pre_process_data, ds, iterations_count,
 
 
 def add_months(d, x):
-    import datetime
+
     new_month = (((d.month - 1) + x) % 12) + 1
     new_year = int(d.year + (((d.month - 1) + x) / 12))
     return datetime.date(new_year, new_month, d.day)
@@ -266,8 +237,7 @@ def add_months(d, x):
 
 # noinspection PyPep8Naming
 def prepare_for_split(df_in, look_back, target_column='target', pre_process_func=None):
-    import pandas as pd
-    import hybrid_helper
+
 
     if type(df_in) is hybrid_helper.Dataset:
         df = pd.DataFrame(df_in.data)
@@ -293,7 +263,7 @@ def df_to_ml_format(df_in, train_size, look_back=5, target_column='target', drop
 
     Input is a Pandas DataFrame.
     Output is a np array in the format of (samples, timesteps, shifted_features).
-    Currently this function only accepts one shifted_target variable.
+    Currently, this function only accepts one shifted_target variable.
 
     Usage example:
 
@@ -302,7 +272,7 @@ def df_to_ml_format(df_in, train_size, look_back=5, target_column='target', drop
     test_size = 0.5 # percentage to use for training
     target_column = 'c' # shifted_target column name, all other columns are taken as shifted_features
     scale_X = True
-    look_back = 5 # Amount of previous X values to look at when predicting the current y value
+    look_back = 5 # Number of previous X values to look at when predicting the current y value
     """
 
     shifted_features, shifted_target, num_features = prepare_for_split(df_in, look_back, target_column,
@@ -320,11 +290,9 @@ def df_to_ml_format(df_in, train_size, look_back=5, target_column='target', drop
     y_test = shifted_target[split_index:]  # original is split_index:-1
     X_train, y_train, X_test, y_test, scalers = scale_data(X_train, y_train, X_test, y_test, scale_target=scale_target,
                                                            scale_features_method=scale_features_method, dropna=dropna)
-    X_train, X_test = reshape_data(X_train, X_test, num_features, n_subsequences=n_subsequences, look_back=look_back)
+    X_train, X_test = reshape_data(X_train, X_test, n_subsequences=n_subsequences)
     return X_train, y_train, X_test, y_test, scalers
 
-
-import numpy as np
 
 
 class BlockingTimeSeriesSplit(_BaseKFold, ABC):
