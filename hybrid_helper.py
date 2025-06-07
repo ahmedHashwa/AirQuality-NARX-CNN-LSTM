@@ -1,12 +1,9 @@
 import os.path
-
+import aqi
 from fireTS.models import NARX, DirectAutoRegressor
 
 import hybrid_preprocess
-import aqi
 
-
-# from preprocess import ScaleMethod, ReshapeMethod
 
 
 class Dataset:
@@ -77,8 +74,8 @@ def evaluate_results(real, prediction, method_key, regressor_name, print_results
     results['Exog Order'] = predicted_result.exog_order
     results['Exog Delay'] = predicted_result.exog_delay
 
-    results['Step'] = predicted_result.step if  hasattr(predicted_result,
-                                                                       'step') else None
+    results['Step'] = predicted_result.step if hasattr(predicted_result,
+                                                       'step') else None
 
     for m in method_key.evaluation_methods:
         results[m] = method_key.evaluation_methods[m](real, prediction)
@@ -165,44 +162,30 @@ def save_results(observed, predicted, fit_result, metric_result, model, session_
     col_index = 0
     print(f'Adding real values for {target_column}')
     predictions.insert(loc=0, column=f"{target_column}_Real",
-                       value=[item for sublist in [observed[:max_limit]] for item in
-                              sublist],
+                       value=pd.Series(observed[:max_limit]),
                        allow_duplicates=True)
     col_index = col_index + 1
     if target_column != 'NO':
         predictions.insert(loc=col_index, column=f"{target_column}_aqi_Real",
-                           value=[item for sublist in [get_aqi(target_column, observed[:max_limit])]
-                                  for
-                                  item
-                                  in
-                                  sublist],
+                           value=pd.Series(get_aqi(target_column, observed[:max_limit])),
                            allow_duplicates=True)
         col_index = col_index + 1
         predictions.insert(loc=col_index, column=f"{target_column}_aqi_level_Real",
-                           value=[item for sublist in
-                                  [get_aqi_level(get_aqi(target_column, observed[:max_limit]))]
-                                  for
-                                  item in sublist],
+                           value=pd.Series(get_aqi_level(get_aqi(target_column, observed[:max_limit]))),
+
                            allow_duplicates=True)
         col_index = col_index + 1
     predictions.insert(loc=col_index, column=f'{target_column}_{regressor_name}_{index}',
-                       value=[item for sublist in [predicted[:max_limit]] for item in
-                              sublist],
+                       value=pd.Series(predicted[:max_limit]),
                        allow_duplicates=True)
     col_index = col_index + 1
     if target_column != 'NO':
         predictions.insert(loc=col_index, column=f'{target_column}_aqi_{regressor_name}_{index}',
-                           value=[item for sublist in [get_aqi(target_column, predicted[:max_limit])]
-                                  for
-                                  item in
-                                  sublist],
+                           value=pd.Series(get_aqi(target_column, predicted[:max_limit])),
                            allow_duplicates=True)
         col_index = col_index + 1
         predictions.insert(loc=col_index, column=f'{target_column}_aqi_level_{regressor_name}_{index}',
-                           value=[item for sublist in
-                                  [get_aqi_level(get_aqi(target_column, predicted[:max_limit]))] for
-                                  item
-                                  in sublist],
+                           value=pd.Series(get_aqi_level(get_aqi(target_column, predicted[:max_limit]))),
                            allow_duplicates=True)
     if hasattr(model, 'base_model') or (
             hasattr(model, 'base_estimator') and hasattr(model.base_estimator, 'base_model')):
@@ -243,7 +226,7 @@ def save_results(observed, predicted, fit_result, metric_result, model, session_
 
 # noinspection PyPep8Naming
 def benchmark_algorithm(X_train, y_train, X_test, y_test, predictor_object,
-                        num_features=None, n_subsequences=None,
+                        n_subsequences=None,
                         scale_target=False,
                         fit_process=None,
                         predict_process=None,
@@ -274,9 +257,9 @@ def benchmark_algorithm(X_train, y_train, X_test, y_test, predictor_object,
                                      scale_target=scale_target,
                                      scale_features_method=scale_features_method, dropna=False)
     X_train_out, X_test_out = \
-        hybrid_preprocess.reshape_data(X_train=X_train_out, X_test=X_test_out, num_features=num_features,
+        hybrid_preprocess.reshape_data(X_train=X_train_out, X_test=X_test_out,
                                        reshape_features_method=reshape_features_method,
-                                       n_subsequences=n_subsequences, look_back=method_key.look_back)
+                                       n_subsequences=n_subsequences)
     auto_order = predictor_object.auto_order if isinstance(predictor_object, (NARX, DirectAutoRegressor)) else None
     exog_delay = predictor_object.exog_delay if isinstance(predictor_object, (NARX, DirectAutoRegressor)) else None
     exog_order = predictor_object.exog_order if isinstance(predictor_object, (NARX, DirectAutoRegressor)) else None

@@ -44,9 +44,7 @@ class CNNLSTMModel:
             x_train = \
                 hybrid_preprocess.reshape_features(x_train,
                                                    reshape_features_method=hybrid_preprocess.ReshapeMethod.FourDShape,
-                                                   num_features=self.num_features,
-                                                   n_subsequences=self.n_subsequences,
-                                                   look_back=self.look_back)
+                                                   n_subsequences=self.n_subsequences)
 
         res = self.base_model.fit(
             x=x_train,
@@ -63,9 +61,7 @@ class CNNLSTMModel:
             x_test = \
                 hybrid_preprocess.reshape_features(x_test,
                                                    reshape_features_method=hybrid_preprocess.ReshapeMethod.FourDShape,
-                                                   num_features=self.num_features,
-                                                   n_subsequences=self.n_subsequences,
-                                                   look_back=self.look_back)
+                                                   n_subsequences=self.n_subsequences)
 
         result = self.base_model.predict(x=x_test, batch_size=batch_size)
         return result.reshape(-1)
