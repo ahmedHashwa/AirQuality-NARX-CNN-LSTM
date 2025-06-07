@@ -1,5 +1,7 @@
 from abc import ABC
+from enum import Enum, auto
 
+import numpy as np
 from sklearn.model_selection._split import _BaseKFold
 
 
@@ -73,9 +75,6 @@ def extract_data(path: str, file_data_transformer=None, chunk_filter=None, chunk
     if file_data_transformer is not None and file_data_transformer.func:
         data = file_data_transformer.func(data, path, file_data_transformer.name)
     return data
-
-
-from enum import Enum, auto
 
 
 class ScaleMethod(Enum):
@@ -323,8 +322,6 @@ def df_to_ml_format(df_in, train_size, look_back=5, target_column='target', drop
     X_train, X_test = reshape_data(X_train, X_test, num_features, n_subsequences=n_subsequences, look_back=look_back)
     return X_train, y_train, X_test, y_test, scalers
 
-
-import numpy as np
 
 
 class BlockingTimeSeriesSplit(_BaseKFold, ABC):

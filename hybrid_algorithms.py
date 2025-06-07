@@ -1,7 +1,12 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (
-    LSTM, Dense, Dropout, TimeDistributed, Flatten, BatchNormalization,
-    Conv1D, MaxPooling1D
+    LSTM,
+    Dense,
+    Dropout,
+    TimeDistributed,
+    Flatten,
+    Conv1D,
+    MaxPooling1D,
 )
 
 class CNNLSTMModel:
