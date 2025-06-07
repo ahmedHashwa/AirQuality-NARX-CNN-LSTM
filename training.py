@@ -51,15 +51,20 @@ def train(datasets_list, cfg):
 
     def key(run_index, **kwargs):
         nonlocal algorithm_index
+        e_delay = kwargs.get("e_delay", [])
+        e_order = kwargs.get("e_order", [])
         regressor_name = kwargs["regressor_name"]
         if regressor_name not in regressors.keys():
             regressors[regressor_name] = algorithm_index
             algorithm_index += 1
         regressor_name = f'{regressors[regressor_name]:02d}_{regressor_name}'
-        kwargs['regressor_name'] = regressor_name
+        if any(n in regressor_name for n in ["NARX", "DAR"]):
+            kwargs["regressor_name"] = f"{regressor_name}_ao_{cfg.look_back:02d}_ed_{f_list(e_delay)}_eo_{f_list(e_order)}"
+        else:
+            kwargs["regressor_name"] = regressor_name
         kwargs['overwrite_folder'] = overwrite_folder
         kwargs['max_limit'] = cfg.max_limit
-        kwargs['look_back'] = cfg.look_back
+        kwargs['look_back'] = cfg.look_back if not any(n in regressor_name for n in ["NARX", "DAR"]) else 0
         kwargs['n_estimators'] = cfg.n_estimators
         kwargs['session_start_datetime'] = session_start_datetime
         kwargs['dropout_rate'] = cfg.dropout_rate
