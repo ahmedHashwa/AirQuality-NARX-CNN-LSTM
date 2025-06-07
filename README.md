@@ -52,4 +52,4 @@ pip install -r requirements.txt
 
 If you are using CodeSpaces, the devcontainer will automatically install the dependencies for you.
 
-Edit parameters in config.py then run `python main.py`.
+Edit parameters in `airquality/config.py` then run `python main.py`.

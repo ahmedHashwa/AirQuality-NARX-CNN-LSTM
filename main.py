@@ -9,9 +9,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 if sys.version_info < (3, 11) or sys.version_info >= (3, 12):
     raise RuntimeError("This project requires Python 3.11")
 
-from config import CONFIG
-from datasets import load_datasets
-from training import train
+from airquality.config import CONFIG
+from airquality.datasets import load_datasets
+from airquality.training import train
 
 
 def main():

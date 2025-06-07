@@ -7,8 +7,8 @@ from pandas import DataFrame
 from sklearn.ensemble import RandomForestRegressor
 from xgboost.sklearn import XGBRFRegressor
 
-import hybrid_helper
-import hybrid_preprocess
+from . import helper
+from . import preprocess
 
 
 dataframe_columns_targets_manchester_hourly = {
@@ -155,7 +155,7 @@ def pre_process_data(df: DataFrame, ds_name):
 
 
 def load_datasets(data_dir):
-    manchester_hourly1519_data_XGBRF_imputed = hybrid_preprocess.process_dir(
+    manchester_hourly1519_data_XGBRF_imputed = preprocess.process_dir(
         f'{data_dir}/Manchester/Piccadilly/AirMeteoHourly1519/',
         skip_rows=4,
         skipped_column_names=skipped_column_names,
@@ -164,7 +164,7 @@ def load_datasets(data_dir):
         t_tuple=tuple_type('XGBRFImputeMethodHourly1519', impute_methods[ImputeMethod.ImputeXGBRFHourly])
     )
 
-    china_data_extracted = hybrid_preprocess.process_dir(
+    china_data_extracted = preprocess.process_dir(
         f'{data_dir}/China/Data',
         chunk_size=10000,
         skip_rows=0,
@@ -173,14 +173,14 @@ def load_datasets(data_dir):
     )
 
     datasets = [
-        hybrid_helper.Dataset(
+        helper.Dataset(
             name='CHN_Ext',
             data=china_data_extracted,
             feature_columns=['pm2.5', 'Iws', 'Ir', 'Datetime'],
             target_columns=['pm2.5'],
             include=True,
         ),
-        hybrid_helper.Dataset(
+        helper.Dataset(
             name='MCR_H_XGBRF_Imputed',
             feature_columns=['PM25', 'NO', 'NO2', 'M_DIR', 'M_T', 'Datetime'],
             data=manchester_hourly1519_data_XGBRF_imputed,

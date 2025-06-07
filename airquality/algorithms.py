@@ -40,11 +40,14 @@ class CNNLSTMModel:
 
     def fit(self, x_train, y_train, epochs=100, batch_size=24, verbose=1):
         if len(x_train.shape) != 4:
-            import hybrid_preprocess
-            x_train = \
-                hybrid_preprocess.reshape_features(x_train,
-                                                   reshape_features_method=hybrid_preprocess.ReshapeMethod.FourDShape,
-                                                   n_subsequences=self.n_subsequences)
+            from . import preprocess
+            x_train = (
+                preprocess.reshape_features(
+                    x_train,
+                    reshape_features_method=preprocess.ReshapeMethod.FourDShape,
+                    n_subsequences=self.n_subsequences,
+                )
+            )
 
         res = self.base_model.fit(
             x=x_train,
@@ -57,11 +60,14 @@ class CNNLSTMModel:
 
     def predict(self, x_test, batch_size=24):
         if len(x_test.shape) != 4:
-            import hybrid_preprocess
-            x_test = \
-                hybrid_preprocess.reshape_features(x_test,
-                                                   reshape_features_method=hybrid_preprocess.ReshapeMethod.FourDShape,
-                                                   n_subsequences=self.n_subsequences)
+            from . import preprocess
+            x_test = (
+                preprocess.reshape_features(
+                    x_test,
+                    reshape_features_method=preprocess.ReshapeMethod.FourDShape,
+                    n_subsequences=self.n_subsequences,
+                )
+            )
 
         result = self.base_model.predict(x=x_test, batch_size=batch_size)
         return result.reshape(-1)
@@ -108,10 +114,13 @@ class LSTMModel:
 
     def fit(self, x_train, y_train, epochs=100, batch_size=24, verbose=1):
         if len(x_train.shape) != 3:
-            import hybrid_preprocess
-            x_train = \
-                hybrid_preprocess.reshape_features(x_train,
-                                                   reshape_features_method=hybrid_preprocess.ReshapeMethod.ThreeDShape)
+            from . import preprocess
+            x_train = (
+                preprocess.reshape_features(
+                    x_train,
+                    reshape_features_method=preprocess.ReshapeMethod.ThreeDShape,
+                )
+            )
         res = self.base_model.fit(
             x=x_train,
             y=y_train,
@@ -123,10 +132,13 @@ class LSTMModel:
 
     def predict(self, x_test, batch_size=24):
         if len(x_test.shape) != 3:
-            import hybrid_preprocess
-            x_test = \
-                hybrid_preprocess.reshape_features(x_test,
-                                                   reshape_features_method=hybrid_preprocess.ReshapeMethod.ThreeDShape)
+            from . import preprocess
+            x_test = (
+                preprocess.reshape_features(
+                    x_test,
+                    reshape_features_method=preprocess.ReshapeMethod.ThreeDShape,
+                )
+            )
         result = self.base_model.predict(x=x_test, batch_size=batch_size)
         return result.reshape(-1)
 
