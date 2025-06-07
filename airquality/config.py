@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from hybrid_preprocess import ScaleMethod, SplitMode
+from .enums import ScaleMethod, SplitMode
 
 
 @dataclass

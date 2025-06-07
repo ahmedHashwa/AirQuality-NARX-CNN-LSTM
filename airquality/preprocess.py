@@ -5,9 +5,9 @@ from os.path import isfile, join, exists
 import pandas as pd
 import numpy as np
 import datetime
-import hybrid_helper
+from . import helper
 import math
-from enums import  ScaleMethod, ReshapeMethod, SplitMode
+from .enums import ScaleMethod, ReshapeMethod, SplitMode
 from sklearn.model_selection._split import _BaseKFold
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
@@ -239,7 +239,7 @@ def add_months(d, x):
 def prepare_for_split(df_in, look_back, target_column='target', pre_process_func=None):
 
 
-    if type(df_in) is hybrid_helper.Dataset:
+    if type(df_in) is helper.Dataset:
         df = pd.DataFrame(df_in.data)
     else:
         df = pd.DataFrame(df_in)

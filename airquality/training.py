@@ -1,5 +1,5 @@
 import os
-import datasets
+from . import datasets
 from datetime import datetime
 from box import Box
 
@@ -12,10 +12,10 @@ from scipy.stats import pearsonr
 import pandas as pd
 import math
 
-import hybrid_algorithms
-import hybrid_helper
-import hybrid_metrics
-import hybrid_preprocess
+from . import algorithms
+from . import helper
+from . import metrics
+from . import preprocess
 
 
 def fit_process(model, x, y, epochs, batch_size):
@@ -24,7 +24,7 @@ def fit_process(model, x, y, epochs, batch_size):
 
 
 def predict_process(model, x, batch_size):
-    if model is (hybrid_algorithms.CNNLSTMModel or hybrid_algorithms.LSTMModel):
+    if model is (algorithms.CNNLSTMModel or algorithms.LSTMModel):
         return model.predict(x, batch_size=batch_size)
     return model.predict(x)
 
@@ -39,11 +39,11 @@ def train(datasets_list, cfg):
 
     evaluation_methods = {
         'MSE': mean_squared_error,
-        'RMSE': hybrid_metrics.rmse,
-        'NRMSE': hybrid_metrics.nrmse,
+        'RMSE': metrics.rmse,
+        'NRMSE': metrics.nrmse,
         'MAE': mean_absolute_error,
         'R2': r2_score,
-        'IA': hybrid_metrics.index_agreement,
+        'IA': metrics.index_agreement,
         'Pearson R': lambda observed, predicted: pearsonr(observed, predicted)[0]
     }
 
@@ -85,7 +85,7 @@ def train(datasets_list, cfg):
 
     for ds in [d for d in datasets_list if d.include]:
         for target_column in ds.target_columns:
-            for X_train, X_test, y_train, y_test, num_features, i in hybrid_preprocess.split_data(
+            for X_train, X_test, y_train, y_test, num_features, i in preprocess.split_data(
                     target_column=target_column,
                     ds=ds,
                     look_back=cfg.look_back,
@@ -94,10 +94,10 @@ def train(datasets_list, cfg):
                     pre_process_data=datasets.pre_process_data):
 
                 if cfg.enable_CNNLSTM:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train,
                         X_test=X_test, y_test=y_test,
-                        predictor_object=hybrid_algorithms.CNNLSTMModel(
+                        predictor_object=algorithms.CNNLSTMModel(
                             n_lstm_nodes=cfg.n_lstm_nodes,
                             n_dense_nodes=cfg.n_dense_nodes,
                             dropout_rate=0,
@@ -107,14 +107,14 @@ def train(datasets_list, cfg):
                         fit_process=lambda m, x, y: fit_process(m, x, y, cfg.epochs, cfg.batch_size),
                         predict_process=lambda m, x, y=None: predict_process(m, x, cfg.batch_size),
                         scale_features_method=cfg.lstm_scaler_method,
-                        reshape_features_method=hybrid_preprocess.ReshapeMethod.FourDShape,
+                        reshape_features_method=preprocess.ReshapeMethod.FourDShape,
                         method_key=key(i, regressor_name='CNNLSTM'),
                         last_folder_name=last_folder_name)
                 if cfg.enable_LSTM:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train,
                         X_test=X_test, y_test=y_test,
-                        predictor_object=hybrid_algorithms.LSTMModel(
+                        predictor_object=algorithms.LSTMModel(
                             n_lstm_nodes=cfg.n_lstm_nodes,
                             n_dense_nodes=cfg.n_dense_nodes,
                             dropout_rate=0,
@@ -124,11 +124,11 @@ def train(datasets_list, cfg):
                         fit_process=lambda m, x, y: fit_process(m, x, y, cfg.epochs, cfg.batch_size),
                         predict_process=lambda m, x, y=None: predict_process(m, x, cfg.batch_size),
                         scale_features_method=cfg.lstm_scaler_method,
-                        reshape_features_method=hybrid_preprocess.ReshapeMethod.ThreeDShape,
+                        reshape_features_method=preprocess.ReshapeMethod.ThreeDShape,
                         method_key=key(i, regressor_name='LSTM'),
                         last_folder_name=last_folder_name)
                 if cfg.enable_ET:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                         predictor_object=ExtraTreesRegressor(n_estimators=cfg.n_estimators, n_jobs=-1, verbose=3),
                         scale_target=cfg.scale_target,
@@ -136,7 +136,7 @@ def train(datasets_list, cfg):
                         method_key=key(i, regressor_name='ExtraTrees'),
                         last_folder_name=last_folder_name)
                 if cfg.enable_XGBRF:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                         predictor_object=XGBRFRegressor(n_estimators=cfg.n_estimators, verbosity=3),
                         scale_target=cfg.scale_target,
@@ -145,7 +145,7 @@ def train(datasets_list, cfg):
                         method_key=key(i, regressor_name='XGBRF'),
                         last_folder_name=last_folder_name)
                 if cfg.enable_XGB:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                         predictor_object=XGBRegressor(n_estimators=cfg.n_estimators, verbosity=3),
                         scale_target=cfg.scale_target,
@@ -153,7 +153,7 @@ def train(datasets_list, cfg):
                         method_key=key(i, regressor_name='XGB'),
                         last_folder_name=last_folder_name)
                 if cfg.enable_RF:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                         predictor_object=RandomForestRegressor(n_estimators=cfg.n_estimators, n_jobs=-1, verbose=3),
                         scale_target=cfg.scale_target,
@@ -161,9 +161,9 @@ def train(datasets_list, cfg):
                         method_key=key(i, regressor_name='RandomForest'),
                         last_folder_name=last_folder_name)
                 if cfg.enable_LSTM_dropout:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
-                        predictor_object=hybrid_algorithms.LSTMModel(
+                        predictor_object=algorithms.LSTMModel(
                             n_lstm_nodes=cfg.n_lstm_nodes,
                             n_dense_nodes=cfg.n_dense_nodes,
                             dropout_rate=cfg.dropout_rate,
@@ -173,11 +173,11 @@ def train(datasets_list, cfg):
                         fit_process=lambda m, x, y: fit_process(m, x, y, cfg.epochs, cfg.batch_size),
                         predict_process=lambda m, x, y=None: predict_process(m, x, cfg.batch_size),
                         scale_features_method=cfg.lstm_scaler_method,
-                        reshape_features_method=hybrid_preprocess.ReshapeMethod.ThreeDShape,
+                        reshape_features_method=preprocess.ReshapeMethod.ThreeDShape,
                         method_key=key(i, regressor_name='LSTM_dropout'),
                         last_folder_name=last_folder_name)
                 if cfg.enable_GB:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                         predictor_object=GradientBoostingRegressor(n_estimators=cfg.n_estimators, verbose=3),
                         scale_target=cfg.scale_target,
@@ -185,7 +185,7 @@ def train(datasets_list, cfg):
                         method_key=key(i, regressor_name='GradientBoosting'),
                         last_folder_name=last_folder_name)
                 if cfg.enable_SVR:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                         predictor_object=SVR(C=2.0, epsilon=0.1, kernel='rbf', gamma=0.5, tol=0.001,
                                             verbose=True, shrinking=True, max_iter=10000),
@@ -194,7 +194,7 @@ def train(datasets_list, cfg):
                         method_key=key(i, regressor_name='SVR'),
                         last_folder_name=last_folder_name)
                 if cfg.enable_XGBRF_DART:
-                    hybrid_helper.benchmark_algorithm(
+                    helper.benchmark_algorithm(
                         X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
                         predictor_object=XGBRFRegressor(n_estimators=cfg.n_estimators, verbosity=3, booster='dart'),
                         scale_target=cfg.scale_target,

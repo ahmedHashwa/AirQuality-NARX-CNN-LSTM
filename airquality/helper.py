@@ -1,7 +1,7 @@
 import os.path
 import aqi
 from fireTS.models import NARX, DirectAutoRegressor
-from enums import  ScaleMethod, ReshapeMethod, SplitMode
+from .enums import ScaleMethod, ReshapeMethod, SplitMode
 
 
 
@@ -235,7 +235,7 @@ def benchmark_algorithm(X_train, y_train, X_test, y_test, predictor_object,
                         ReshapeMethod.NoReshape,
                         method_key=None, last_folder_name=''):
     import numpy as np
-    import hybrid_preprocess
+    from . import preprocess
     index = f'i_{method_key.index:02d}'
 
     out_dir = f'{method_key.results_dir}/{last_folder_name}'
@@ -252,11 +252,11 @@ def benchmark_algorithm(X_train, y_train, X_test, y_test, predictor_object,
     min_test_index = X_test.index.min()
     max_test_index = X_test.index.max()
     X_train_out, y_train_out, X_test_out, y_test_out, scalers = \
-        hybrid_preprocess.scale_data(X_train.values, y_train.values, X_test.values, y_test.values,
+        preprocess.scale_data(X_train.values, y_train.values, X_test.values, y_test.values,
                                      scale_target=scale_target,
                                      scale_features_method=scale_features_method, dropna=False)
     X_train_out, X_test_out = \
-        hybrid_preprocess.reshape_data(X_train=X_train_out, X_test=X_test_out,
+        preprocess.reshape_data(X_train=X_train_out, X_test=X_test_out,
                                        reshape_features_method=reshape_features_method,
                                        n_subsequences=n_subsequences)
     auto_order = predictor_object.auto_order if isinstance(predictor_object, (NARX, DirectAutoRegressor)) else None
